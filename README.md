@@ -6,7 +6,7 @@ Provides coroutine builders to execute AWS Java SDK commands as asynchronous or 
 ## Example
 
 ```kotlin
-val client = getAwsEc2AsyncClient()
+val asyncClient = getAwsEc2AsyncClient()
 
 // Launch a new instance for every custom AMI in the current account
 coroutineScope {
