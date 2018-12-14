@@ -18,6 +18,7 @@ import kotlin.coroutines.resumeWithException
  *   val client: AmazonEC2Async = buildClient()
  *   val describeResult: DescribeInstancesResult = awsCoroutine(client::describeInstancesAsync)
  */
+@ExperimentalAwsCoroutineApi
 suspend inline fun <AwsRequest : AmazonWebServiceRequest, AwsResult : AmazonWebServiceResult<*>> awsCoroutine(
     crossinline method: (request: AwsRequest, handler: AsyncHandler<AwsRequest, AwsResult>) -> Future<AwsResult>,
     crossinline requestBuilder: () -> AwsRequest
@@ -30,6 +31,7 @@ suspend inline fun <AwsRequest : AmazonWebServiceRequest, AwsResult : AmazonWebS
 /**
  * Starts a cancellable coroutine that executes [method] and responds with the [AwsResult].
  */
+@ExperimentalAwsCoroutineApi
 suspend inline fun <AwsRequest : AmazonWebServiceRequest, AwsResult : AmazonWebServiceResult<*>> awsCoroutine(
     crossinline method: (handler: AsyncHandler<AwsRequest, AwsResult>) -> Future<AwsResult>
 ): AwsResult = suspendCancellableCoroutine {

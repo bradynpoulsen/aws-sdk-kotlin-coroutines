@@ -10,6 +10,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 /**
  * Executes the blocking [method] in the [context] (defaults to [Dispatchers.IO]).
  */
+@ExperimentalAwsCoroutineApi
 suspend inline fun <AwsRequest : AmazonWebServiceRequest, AwsResult : AmazonWebServiceResult<*>> awsBlockingCoroutine(
     crossinline method: (request: AwsRequest) -> AwsResult,
     context: CoroutineContext = EmptyCoroutineContext,
@@ -21,6 +22,7 @@ suspend inline fun <AwsRequest : AmazonWebServiceRequest, AwsResult : AmazonWebS
 /**
  * Executes the blocking [method] in the [context] (defaults to [Dispatchers.IO]).
  */
+@ExperimentalAwsCoroutineApi
 suspend inline fun <AwsResult : AmazonWebServiceResult<*>> awsBlockingCoroutine(
     crossinline method: () -> AwsResult,
     context: CoroutineContext = EmptyCoroutineContext

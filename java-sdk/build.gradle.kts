@@ -18,7 +18,8 @@ dependencies {
 tasks.withType(KotlinCompile::class.java).all {
     kotlinOptions.freeCompilerArgs += setOf(
         "-Xuse-experimental=kotlin.Experimental",
-        "-Xuse-experimental=com.github.bradynpoulsen.aws.coroutines.InternalAwsCoroutineApi"
+        "-Xuse-experimental=com.github.bradynpoulsen.aws.coroutines.InternalAwsCoroutineApi",
+        "-Xuse-experimental=com.github.bradynpoulsen.aws.coroutines.ExperimentalAwsCoroutineApi"
     )
 }
 
