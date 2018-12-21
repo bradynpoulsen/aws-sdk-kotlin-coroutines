@@ -6,18 +6,18 @@ Provides coroutine builders to execute AWS Java SDK commands as asynchronous or 
 ## Example
 
 ```kotlin
-val asyncClient = getAwsEc2AsyncClient()
+val client: AmazonEC2 = buildAmazonEC2Client()
 
 // Launch a new instance for every custom AMI in the current account
-coroutineScope {
+with(CoroutineScope(Dispatchers.IO + Job())) {
     // suspends until the SDK command has completed
-    awsCoroutine(asyncClient::describeImagesAsync) {
+    suspendCommand(client::describeImages) {
         DescribeImagesRequest()
             .withOwners("self")
     }.images.map { image ->
         // launch SDK commands in parallel
         async {
-            awsCoroutine(asyncClient::runInstancesAsync) {
+            suspendCommand(client::runInstances) {
                 RunInstancesRequest(image.imageId, 1, 1)
             }
         }

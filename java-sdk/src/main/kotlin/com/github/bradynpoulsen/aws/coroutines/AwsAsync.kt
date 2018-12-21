@@ -3,6 +3,7 @@ package com.github.bradynpoulsen.aws.coroutines
 import com.amazonaws.AmazonWebServiceRequest
 import com.amazonaws.AmazonWebServiceResult
 import com.amazonaws.handlers.AsyncHandler
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.cancelFutureOnCancellation
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.concurrent.Future
@@ -11,31 +12,45 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 /**
- * Starts a cancellable coroutine that executes [method] and responds with the [AwsResult].
+ * Starts a [CancellableContinuation] that executes [method] and resumes with the [AwsResult].
+ *
+ * _Note_: This request is launched in the SDK client's executor threads.
+ * See [com.amazonaws.client.builder.AwsAsyncClientBuilder.AsyncBuilderParams.defaultExecutor] for more details.
  *
  * Example:
  *
  *   val client: AmazonEC2Async = buildClient()
- *   val describeResult: DescribeInstancesResult = awsCoroutine(client::describeInstancesAsync)
+ *   val describeResult: DescribeInstancesResult = suspendCommandAsync(client::describeInstancesAsync)
  */
 @ExperimentalAwsCoroutineApi
-suspend inline fun <AwsRequest : AmazonWebServiceRequest, AwsResult : AmazonWebServiceResult<*>> awsCoroutine(
-    crossinline method: (request: AwsRequest, handler: AsyncHandler<AwsRequest, AwsResult>) -> Future<AwsResult>,
-    crossinline requestBuilder: () -> AwsRequest
+suspend inline fun <AwsRequest : AmazonWebServiceRequest, AwsResult : AmazonWebServiceResult<*>> suspendCommandAsync(
+    crossinline method: (handler: AsyncHandler<AwsRequest, AwsResult>) -> Future<AwsResult>
 ): AwsResult = suspendCancellableCoroutine {
-    method(requestBuilder(), AwsContinuationAsyncHandler(it)).also { future ->
+    method(AwsContinuationAsyncHandler(it)).also { future ->
         it.cancelFutureOnCancellation(future)
     }
 }
 
 /**
- * Starts a cancellable coroutine that executes [method] and responds with the [AwsResult].
+ * Starts a [CancellableContinuation] that executes [method] and resumes with the [AwsResult].
+ *
+ * _Note_: This request is launched in the SDK client's executor threads.
+ * See [com.amazonaws.client.builder.AwsAsyncClientBuilder.AsyncBuilderParams.defaultExecutor] for more details.
+ *
+ * Example:
+ *
+ *   val client: AmazonEC2Async = buildClient()
+ *   val describeResult: DescribeImagesResult = suspendCommandAsync(client::describeImagesAsync) {
+ *       DescribeImagesRequest()
+ *          .withImageIds("ami-12312412431754", "ami-12334237461523")
+ *   }
  */
 @ExperimentalAwsCoroutineApi
-suspend inline fun <AwsRequest : AmazonWebServiceRequest, AwsResult : AmazonWebServiceResult<*>> awsCoroutine(
-    crossinline method: (handler: AsyncHandler<AwsRequest, AwsResult>) -> Future<AwsResult>
+suspend inline fun <AwsRequest : AmazonWebServiceRequest, AwsResult : AmazonWebServiceResult<*>> suspendCommandAsync(
+    crossinline method: (request: AwsRequest, handler: AsyncHandler<AwsRequest, AwsResult>) -> Future<AwsResult>,
+    crossinline requestBuilder: () -> AwsRequest
 ): AwsResult = suspendCancellableCoroutine {
-    method(AwsContinuationAsyncHandler(it)).also { future ->
+    method(requestBuilder(), AwsContinuationAsyncHandler(it)).also { future ->
         it.cancelFutureOnCancellation(future)
     }
 }
